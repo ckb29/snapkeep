@@ -206,19 +206,19 @@ export default UploadPage;
 */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  Upload, 
-  FileText, 
-  Download, 
-  Trash2, 
-  Lock, 
-  Package, 
-  Plus, 
+import {
+  Upload,
+  FileText,
+  Download,
+  Trash2,
+  Lock,
+  Package,
+  Plus,
   Save,
   AlertCircle,
   CheckCircle,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import axios from "axios";
 
@@ -243,7 +243,7 @@ const UploadPage = () => {
     if (!domain || hasAccess) return;
 
     axios
-      .post(`http://localhost:8051/api/view/${domain}`, { password })
+      .post(`https://mysnapkeep.onrender.com/api/view/${domain}`, { password })
       .then((res) => {
         if (res.data.success) {
           setText(res.data.text || "");
@@ -292,7 +292,7 @@ const UploadPage = () => {
         filesToUpload.map((file) => uploadToCloudinary(file))
       );
 
-      const res = await axios.post("http://localhost:8051/api/upload", {
+      const res = await axios.post("https://mysnapkeep.onrender.com/api/upload", {
         linkId: domain,
         text,
         files: uploaded,
@@ -316,7 +316,7 @@ const UploadPage = () => {
 
   const handleDeleteFile = async (fileUrl) => {
     try {
-      const res = await axios.post("http://localhost:8051/api/delete-file", {
+      const res = await axios.post("https://mysnapkeep.onrender.com/api/delete-file", {
         linkId: domain,
         fileUrl,
       });
@@ -329,11 +329,11 @@ const UploadPage = () => {
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   // Password prompt UI
@@ -357,7 +357,7 @@ const UploadPage = () => {
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && setHasAccess(false)}
+                onKeyPress={(e) => e.key === "Enter" && setHasAccess(false)}
               />
               <button
                 type="button"

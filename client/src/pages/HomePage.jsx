@@ -21,7 +21,7 @@ const HomePage = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8051/api/create", {
+      const res = await axios.post("https://mysnapkeep.onrender.com/api/create", {
         domain,
         password,
         duration,
@@ -41,7 +41,7 @@ const HomePage = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleCreate();
     }
   };
@@ -82,7 +82,7 @@ const HomePage = () => {
             <span className="text-blue-600"> Instantly</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Create a custom domain, upload files, and share them securely. 
+            Create a custom domain, upload files, and share them securely.
             No registration required, optional password protection.
           </p>
         </div>
@@ -146,12 +146,12 @@ const HomePage = () => {
                 </label>
                 <input
                   type="password"
-                  placeholder="Leave empty for no password"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
+                    placeholder="Leave empty for no password"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
               </div>
 
               {/* Error Message */}
