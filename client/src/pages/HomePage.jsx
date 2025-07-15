@@ -5,12 +5,13 @@ import axios from "axios";
 
 const HomePage = () => {
   const [domain, setDomain] = useState("");
-  const [duration, setDuration] = useState(48); // Default to 2 days (48 hours)
+  const [duration, setDuration] = useState(48); // Default 2 days (48 hours)
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Create domain handler
   const handleCreate = async () => {
     if (!domain.trim()) {
       setError("Please enter a domain name.");
@@ -40,6 +41,7 @@ const HomePage = () => {
     }
   };
 
+  // Support Enter key for submission
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleCreate();
@@ -74,6 +76,7 @@ const HomePage = () => {
         </div>
       </header>
 
+      {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -87,7 +90,7 @@ const HomePage = () => {
           </p>
         </div>
 
-        {/* Main Form */}
+        {/* Form Section */}
         <div className="max-w-lg mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <div className="mb-6">
@@ -146,12 +149,12 @@ const HomePage = () => {
                 </label>
                 <input
                   type="password"
-                    placeholder="Leave empty for no password"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                  />
+                  placeholder="Leave empty for no password"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
               </div>
 
               {/* Error Message */}
@@ -180,7 +183,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Features */}
+        {/* Features Section */}
         <div className="mt-16 grid md:grid-cols-3 gap-8">
           <div className="text-center p-6">
             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">

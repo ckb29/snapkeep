@@ -238,7 +238,21 @@ const UploadPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Fetch content if access granted
+  // Reset state on domain change
+  useEffect(() => {
+    setPassword("");
+    setPasswordRequired(false);
+    setHasAccess(false);
+    setError("");
+  }, [domain]);
+
+  // Function to check access (fetch content)
+  const checkAccess = () => {
+    setError("");
+    setHasAccess(false); // triggers useEffect fetch below
+  };
+
+  // Fetch content if access granted or password submitted
   useEffect(() => {
     if (!domain || hasAccess) return;
 
@@ -249,8 +263,10 @@ const UploadPage = () => {
           setText(res.data.text || "");
           setFiles(res.data.files || []);
           setHasAccess(true);
+          setPasswordRequired(false);
         } else if (res.data.requiresPassword) {
           setPasswordRequired(true);
+          setHasAccess(false);
         } else {
           setError("Access denied or domain not found.");
         }
@@ -357,7 +373,7 @@ const UploadPage = () => {
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && setHasAccess(false)}
+                onKeyPress={(e) => e.key === "Enter" && checkAccess()}
               />
               <button
                 type="button"
@@ -377,10 +393,7 @@ const UploadPage = () => {
 
             <button
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
-              onClick={() => {
-                setHasAccess(false);
-                setError("");
-              }}
+              onClick={checkAccess}
             >
               Access Content
             </button>
