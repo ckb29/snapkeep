@@ -8,8 +8,16 @@ import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: "https://mysnapkeep.netlify.app", // replace with actual Netlify URL
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
+app.options("*", cors()); // enable preflight
+
 app.use(bodyParser.json({ limit: "50mb" }));
+
 
 // Cloudinary config
 cloudinary.config({
