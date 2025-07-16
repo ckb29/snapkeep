@@ -165,6 +165,10 @@ app.post("/api/delete-file", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+// 🔹 Ping route to keep server alive
+app.get("/api/ping", (req, res) => {
+  res.send("Pong! ✅ Server is awake.");
+});
 
 // ✅ Start server
 const PORT = process.env.PORT || 8051;
