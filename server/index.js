@@ -8,7 +8,6 @@ import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 const app = express();
 
-// ✅ CORS: Allow Netlify frontend
 const allowedOrigins = ["https://mysnapkeep.netlify.app"];
 
 app.use(
@@ -25,7 +24,7 @@ app.use(
   })
 );
 
-app.options("*", cors()); // enable preflight for all routes
+app.options("*", cors());
 
 app.use(bodyParser.json({ limit: "50mb" }));
 
@@ -56,7 +55,7 @@ const domainSchema = new mongoose.Schema({
 
 const Domain = mongoose.model("Domain", domainSchema);
 
-// ✅ Routes
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("SnapKeep backend is running ✅");
 });
@@ -64,19 +63,28 @@ app.get("/", (req, res) => {
 // 🔹 Create domain
 app.post("/api/create", async (req, res) => {
   const { domain, password, duration } = req.body;
-  const expiresAt = new Date(Date.now() + (duration || 2) * 60 * 60 * 1000); // duration in hours
+  const expiresAt = new Date(Date.now() + (duration || 2) * 60 * 60 * 1000); // default 2 hrs
 
   try {
     const existing = await Domain.findOne({ domain });
 
     if (existing) {
-      if (!existing.password) {
-        return res.json({ existsWithoutPassword: true });
+      if (existing.expiresAt < Date.now()) {
+        // 🧹 Cleanup expired domain and files
+        for (const file of existing.files) {
+          const publicId = file.url.split("/").pop().split(".")[0];
+          try {
+            await cloudinary.uploader.destroy(`snapkeep/${domain}/${publicId}`, {
+              resource_type: "raw",
+            });
+          } catch (err) {
+            console.warn("Cloudinary cleanup error:", err.message);
+          }
+        }
+        await Domain.deleteOne({ domain });
+      } else {
+        return res.status(400).json({ success: false, message: "Domain already in use" });
       }
-      return res.json({
-        success: false,
-        message: "Domain already exists or password protected",
-      });
     }
 
     const entry = new Domain({
@@ -106,10 +114,24 @@ app.post("/api/view/:domain", async (req, res) => {
     if (!data)
       return res.status(404).json({ success: false, message: "Not found" });
 
-    if (data.expiresAt < Date.now())
-      return res
-        .status(410)
-        .json({ success: false, message: "Link expired" });
+    if (data.expiresAt < Date.now()) {
+      // 🧹 Delete files from Cloudinary
+      for (const file of data.files) {
+        const publicId = file.url.split("/").pop().split(".")[0];
+        try {
+          await cloudinary.uploader.destroy(`snapkeep/${domain}/${publicId}`, {
+            resource_type: "raw",
+          });
+        } catch (err) {
+          console.warn("Cloudinary delete error:", err.message);
+        }
+      }
+
+      // 🧹 Delete domain from MongoDB
+      await Domain.deleteOne({ domain });
+
+      return res.status(410).json({ success: false, message: "Link expired and removed" });
+    }
 
     if (data.password && data.password !== password)
       return res.json({ success: false, requiresPassword: true });
@@ -165,7 +187,8 @@ app.post("/api/delete-file", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
-// 🔹 Ping route to keep server alive
+
+// 🔹 Ping route
 app.get("/api/ping", (req, res) => {
   res.send("Pong! ✅ Server is awake.");
 });
